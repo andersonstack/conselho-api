@@ -1,6 +1,5 @@
 import express from "express";
 import cors from "cors";
-import bcrypt from "bcrypt";
 import db from "./database.js";
 
 const app = express();
@@ -13,11 +12,10 @@ app.use(cors());
 app.post("/users", async (req, res) => {
   try {
     const { userName, name, senha } = req.body;
-    const hashedPassword = await bcrypt.hash(senha, 10);
 
     db.run(
       "INSERT INTO users (userName, name, senha) VALUES (?, ?, ?)",
-      [userName, name, hashedPassword],
+      [userName, name, senha],
       function (err) {
         if (err) {
           return res.status(409).json({ message: "Usuário já existe" });
@@ -49,12 +47,10 @@ app.post("/login", (req, res) => {
         return res.status(401).json({ message: "Senha inválida" });
       }
 
-      res
-        .status(200)
-        .json({
-          message: "Login bem-sucedido",
-          user: { id: user.id, userName: user.userName },
-        });
+      res.status(200).json({
+        message: "Login bem-sucedido",
+        user: { id: user.id, userName: user.userName },
+      });
     }
   );
 });
@@ -117,6 +113,16 @@ app.get("/users", (req, res) => {
       return res.status(500).json({ message: "Erro ao buscar usuários" });
     }
     res.status(200).json({ data: rows });
+  });
+});
+
+// Deletar todos os usuários
+app.delete("/users", (req, res) => {
+  db.run("DELETE FROM users", (err) => {
+    if (err) {
+      return res.status(500).json({ message: "Erro ao deletar usuários" });
+    }
+    res.status(200).json({ message: "Usuários deletados com sucesso" });
   });
 });
 
