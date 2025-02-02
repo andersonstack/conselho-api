@@ -208,6 +208,22 @@ app.get("/users/:id/frases", async (req, res) => {
   }
 });
 
+app.get("/users", async (req, res) => {
+  try {
+    const users = await prisma.user.findMany();
+    res.status(200).send({
+      message: "Usuários encontrados",
+      data: users,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({
+      message: "Erro ao buscar usuários",
+      error: error.message,
+    });
+  }
+});
+
 app.listen(port, () => {
   console.log("Servidor rodando na porta", port);
 });
