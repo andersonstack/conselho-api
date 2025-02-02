@@ -1,0 +1,5 @@
+{
+  "conventionalCommits.scopes": [
+    "retirando depedências de senvolvimento do prisma e mongol."
+  ]
+}
